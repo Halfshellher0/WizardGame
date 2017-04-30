@@ -20,13 +20,39 @@ public class WizardScript : MonoBehaviour {
     float timeToReachTarget;
     bool moving;
     Direction movingDirection;
+    List<Node> currentWalkingPath;
+    int currentLayer;
+
+    //Game Variables
+    public int health;
+    public int movePoints;
+    public int actionPoints;
+    public int victoryPoints;
+    public int fireEssence;
+    public int waterEssence;
+    public int natureEssence;
+    public int voidEssence;
+
 
 
     // Use this for initialization
     void Start () {
+        //initialize Game variables;
+        health = 5;
+        movePoints = 0;
+        actionPoints = 3;
+        victoryPoints = 0;
+        fireEssence = 0;
+        waterEssence = 0;
+        natureEssence = 0;
+        voidEssence = 0;
+
         moving = false;
         float[] tileCoords = gridPositionToScreenPosition(currentTilePositionX, currentTilePositionY);
-        transform.position = new Vector3(tileCoords[0], tileCoords[1], 0);        
+        currentLayer = 4 * (currentTilePositionX + currentTilePositionY) + 3;
+        transform.position = new Vector3(tileCoords[0], tileCoords[1], 0);
+        GetComponent<SpriteRenderer>().sortingOrder = currentLayer;
+
     }
 	
 	// Update is called once per frame
@@ -42,6 +68,10 @@ public class WizardScript : MonoBehaviour {
             else
             {
                 moving = false;
+                if (!randomlyMove)
+                {
+                    walkOnPath(currentWalkingPath);
+                }
             }
         }
         else
@@ -70,12 +100,59 @@ public class WizardScript : MonoBehaviour {
         
     }
 
+    public void walkOnPath(List<Node> walkPath)
+    {
+        currentWalkingPath = walkPath;
+        if (walkPath.Count > 0 && walkPath.Count <= movePoints + 1)
+        {            
+            //Check if wizard is at start of path.
+            if (currentTilePositionX == walkPath[0].X && currentTilePositionY == walkPath[0].Y)
+            {
+                currentWalkingPath.RemoveAt(0);
+
+                if (currentWalkingPath.Count > 0)
+                {
+                    if (!moving)
+                    {
+                        if (currentTilePositionX < walkPath[0].X && currentTilePositionY == walkPath[0].Y)
+                        {                            
+                            //walk SouthEast
+                            MoveDirection(Direction.southEast);
+                            movePoints--;
+                        }
+                        else if (currentTilePositionX == walkPath[0].X && currentTilePositionY < walkPath[0].Y)
+                        {
+                            
+                            //walk SouthWest
+                            MoveDirection(Direction.southWest);
+                            movePoints--;
+                        }
+                        else if (currentTilePositionX > walkPath[0].X && currentTilePositionY == walkPath[0].Y)
+                        {
+                            //walk NorthWest
+                            MoveDirection(Direction.northWest);
+                            movePoints--;
+                        }
+                        else if (currentTilePositionX == walkPath[0].X && currentTilePositionY > walkPath[0].Y)
+                        {
+                            //walk NorthEast
+                            MoveDirection(Direction.northEast);
+                            movePoints--;
+                        }
+
+                    }
+
+                }
+            }
+        }
+    }
+
     float[] gridPositionToScreenPosition(int x, int y)
     {
         float[] returnFloat = new float[2] { 0f, 0f };
 
         returnFloat[0] = ((float)y * -0.64f) + ((float)x * 0.64f) + wizardTileOffsetX;
-        returnFloat[1] = ((float)(x + y) * 0.32f) - 6.08f + wizardTileOffsetY;
+        returnFloat[1] = ((float)(x + y) * -0.32f)+ wizardTileOffsetY;
 
         return returnFloat;
     }
@@ -107,43 +184,64 @@ public class WizardScript : MonoBehaviour {
         switch (d)
         {
             case Direction.northEast:
-                targetX = currentTilePositionX + 1;
-                targetY = currentTilePositionY;
-                targetTileWalkable = BoardScript.Tiles[targetX, targetY].GetComponent<TileScript>().isWalkable;
-                if (targetX < GlobalGameParameters.maxBoardWidth && targetTileWalkable)
+                targetX = currentTilePositionX;
+                targetY = currentTilePositionY - 1;
+                if (targetY > -1)
                 {
-                    MoveToPosition(targetX, targetY, 1f);
-                    movingDirection = Direction.northEast;
+                    targetTileWalkable = BoardScript.Tiles[targetX, targetY].GetComponent<TileScript>().isWalkable && !BoardScript.Tiles[currentTilePositionX, currentTilePositionY].GetComponent<TileScript>().NEWall;
+                    if (targetTileWalkable)
+                    {
+                        MoveToPosition(targetX, targetY, 1f);
+                        movingDirection = Direction.northEast;
+                        currentLayer -= 4;
+                        GetComponent<SpriteRenderer>().sortingOrder = currentLayer;
+                    }
                 }
                 break;
             case Direction.northWest:
-                targetX = currentTilePositionX;
-                targetY = currentTilePositionY + 1;
-                targetTileWalkable = BoardScript.Tiles[targetX, targetY].GetComponent<TileScript>().isWalkable;
-                if (targetY < GlobalGameParameters.maxBoardHeight && targetTileWalkable)
+                targetX = currentTilePositionX - 1;
+                targetY = currentTilePositionY;
+                if (targetX > -1)
                 {
-                    MoveToPosition(targetX, targetY, 1f);
-                    movingDirection = Direction.northWest;
+                    targetTileWalkable = BoardScript.Tiles[targetX, targetY].GetComponent<TileScript>().isWalkable && !BoardScript.Tiles[currentTilePositionX, currentTilePositionY].GetComponent<TileScript>().NWWall; 
+                    if (targetTileWalkable)
+                    {
+                        MoveToPosition(targetX, targetY, 1f);
+                        movingDirection = Direction.northWest;
+                        currentLayer -= 4;
+                        GetComponent<SpriteRenderer>().sortingOrder = currentLayer;
+                    }
                 }
                 break;
             case Direction.southEast:
-                targetX = currentTilePositionX;
-                targetY = currentTilePositionY - 1;
-                targetTileWalkable = BoardScript.Tiles[targetX, targetY].GetComponent<TileScript>().isWalkable;
-                if (targetY > -1 && targetTileWalkable)
+                targetX = currentTilePositionX + 1;
+                targetY = currentTilePositionY;
+                if (targetX < GlobalGameParameters.maxBoardHeight)
                 {
-                    MoveToPosition(targetX, targetY, 1f);
-                    movingDirection = Direction.southEast;
+                    targetTileWalkable = BoardScript.Tiles[targetX, targetY].GetComponent<TileScript>().isWalkable && !BoardScript.Tiles[targetX, targetY].GetComponent<TileScript>().NWWall;
+
+                    if (targetTileWalkable)
+                    {
+                        MoveToPosition(targetX, targetY, 1f);
+                        movingDirection = Direction.southEast;
+                        currentLayer += 4;
+                        GetComponent<SpriteRenderer>().sortingOrder = currentLayer;
+                    }
                 }
                 break;
             case Direction.southWest:
-                targetX = currentTilePositionX - 1;
-                targetY = currentTilePositionY;
-                targetTileWalkable = BoardScript.Tiles[targetX, targetY].GetComponent<TileScript>().isWalkable;
-                if (targetX > -1 && targetTileWalkable)
+                targetX = currentTilePositionX;
+                targetY = currentTilePositionY + 1;
+                if (targetY < GlobalGameParameters.maxBoardWidth)
                 {
-                    MoveToPosition(targetX, targetY, 1f);
-                    movingDirection = Direction.southWest;
+                    targetTileWalkable = BoardScript.Tiles[targetX, targetY].GetComponent<TileScript>().isWalkable && !BoardScript.Tiles[targetX, targetY].GetComponent<TileScript>().NEWall;
+                    if (targetTileWalkable)
+                    {
+                        MoveToPosition(targetX, targetY, 1f);
+                        movingDirection = Direction.southWest;
+                        currentLayer += 4;
+                        GetComponent<SpriteRenderer>().sortingOrder = currentLayer;
+                    }
                 }
                 break;
         }

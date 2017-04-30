@@ -1,0 +1,16 @@
+C:\AutoBackup\C# Projects\MapEdit\MapEdit\bin\Debug\MapEdit.exe
+C:\AutoBackup\C# Projects\MapEdit\MapEdit\bin\Debug\MapEdit.pdb
+C:\AutoBackup\C# Projects\MapEdit\MapEdit\obj\Debug\MapEdit.csprojResolveAssemblyReference.cache
+C:\AutoBackup\C# Projects\MapEdit\MapEdit\obj\Debug\MapEdit.Properties.Resources.resources
+C:\AutoBackup\C# Projects\MapEdit\MapEdit\obj\Debug\MapEdit.csproj.GenerateResource.Cache
+C:\AutoBackup\C# Projects\MapEdit\MapEdit\obj\Debug\MapEdit.exe
+C:\AutoBackup\C# Projects\MapEdit\MapEdit\obj\Debug\MapEdit.pdb
+C:\AutoBackup\C# Projects\MapEdit\MapEdit\obj\Debug\MapEdit.Form1.resources
+E:\GitHub\WizardGame\MapEdit\MapEdit\obj\Debug\MapEdit.exe
+E:\GitHub\WizardGame\MapEdit\MapEdit\obj\Debug\MapEdit.pdb
+E:\GitHub\WizardGame\MapEdit\MapEdit\bin\Debug\MapEdit.exe
+E:\GitHub\WizardGame\MapEdit\MapEdit\bin\Debug\MapEdit.pdb
+E:\GitHub\WizardGame\MapEdit\MapEdit\obj\Debug\MapEdit.csprojResolveAssemblyReference.cache
+E:\GitHub\WizardGame\MapEdit\MapEdit\obj\Debug\MapEdit.Form1.resources
+E:\GitHub\WizardGame\MapEdit\MapEdit\obj\Debug\MapEdit.Properties.Resources.resources
+E:\GitHub\WizardGame\MapEdit\MapEdit\obj\Debug\MapEdit.csproj.GenerateResource.Cache

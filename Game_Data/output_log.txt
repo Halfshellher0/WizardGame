@@ -1,0 +1,42 @@
+Mono path[0] = 'E:/GitHub/WizardGame/Game_Data/Managed'
+Mono path[1] = 'E:/GitHub/WizardGame/Game_Data/Mono'
+Mono config path = 'E:/GitHub/WizardGame/Game_Data/Mono/etc'
+PlayerConnection initialized from E:/GitHub/WizardGame/Game_Data (debug = 0)
+PlayerConnection initialized network socket : 0.0.0.0 55320
+Multi-casting "[IP] 25.31.210.213 [Port] 55320 [Flags] 3 [Guid] 1604680109 [EditorId] 976619214 [Version] 1048832 [Id] WindowsPlayer(Matt-PC) [Debug] 1" to [225.0.0.222:54997]...
+Waiting for connection from host on [0.0.0.0:55320]...
+PlayerConnection accepted from [25.31.210.213] handle:0x26c
+Started listening to [0.0.0.0:55320]
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,defer=y,address=0.0.0.0:56109
+PlayerConnection already initialized - listening to [0.0.0.0:55320]
+Player data archive not found at `E:/GitHub/WizardGame/Game_Data/data.unity3d`, using local filesystemInitialize engine version: 5.6.0f3 (497a0f351392)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: NVIDIA GeForce GTX 560 Ti (ID=0x1200)
+    Vendor:   NVIDIA
+    VRAM:     979 MB
+    Driver:   10.18.13.5582
+Begin MonoManager ReloadAssembly
+Platform assembly: E:\GitHub\WizardGame\Game_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading E:\GitHub\WizardGame\Game_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: E:\GitHub\WizardGame\Game_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading E:\GitHub\WizardGame\Game_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: E:\GitHub\WizardGame\Game_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading E:\GitHub\WizardGame\Game_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: E:\GitHub\WizardGame\Game_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading E:\GitHub\WizardGame\Game_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: E:\GitHub\WizardGame\Game_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
+Loading E:\GitHub\WizardGame\Game_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
+- Completed reload, in  0.023 seconds
+Platform assembly: E:\GitHub\WizardGame\Game_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: E:\GitHub\WizardGame\Game_Data\Managed\System.dll (this message is harmless)
+desktop: 1920x1080 60Hz; virtual: 3840x1080 at 0,0
+<RI> Initializing input.
+<RI> Input initialized.
+<RI> Initialized touch support.
+UnloadTime: 1.676331 ms
+Setting up 2 worker threads for Enlighten.
+  Thread -> id: fb4 -> priority: 1 
+  Thread -> id: 37c8 -> priority: 1 
+Waiting for finish

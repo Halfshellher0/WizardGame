@@ -2,11 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Collections;
+using System.IO;
+using System;
 
 static public class GlobalGameParameters
 {
     static public int maxBoardWidth = 20;
     static public int maxBoardHeight = 20;
+
+    static public float NWWallOffsetX = -0.325f;
+    static public float NWWallOffsetY = 0.431f;
+    static public float NEWallOffsetX = 0.34f;
+    static public float NEWallOffsetY = 0.415f;
+
 }
 
 public enum Direction
@@ -17,14 +25,12 @@ public enum Direction
     southWest = 4
 }
 
-public class BoardScript : MonoBehaviour {    
+public class BoardScript : MonoBehaviour {
 
-    public GameObject tile;
-    public GameObject wizard;
-    float wizardTileOffsetX = 0.01f;
-    float wizardTileOffsetY = -0.45f;
+
 
     //Contains map data
+    /*
     TileType[,] boardMap = new TileType[20,20] 
     { 
         //row0
@@ -46,9 +52,9 @@ public class BoardScript : MonoBehaviour {
         //row8        
         {TileType.walkable,TileType.walkable,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.walkable,TileType.walkable,TileType.walkable,TileType.walkable,TileType.walkable,TileType.walkable,TileType.walkable,TileType.walkable,TileType.walkable,TileType.walkable,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.walkable,TileType.unwalkable_walled },
         //row9        
-        {TileType.chest,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.walkable,TileType.walkable,TileType.walkable,TileType.walkable,TileType.unwalkable_unwalled,TileType.unwalkable_unwalled,TileType.walkable,TileType.walkable,TileType.walkable,TileType.walkable,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.walkable,TileType.chest },
+        {TileType.chest,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.walkable,TileType.walkable,TileType.walkable,TileType.walkable,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.walkable,TileType.walkable,TileType.walkable,TileType.walkable,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.walkable,TileType.chest },
         //row10       
-        {TileType.chest,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.walkable,TileType.walkable,TileType.walkable,TileType.walkable,TileType.unwalkable_unwalled,TileType.unwalkable_unwalled,TileType.walkable,TileType.walkable,TileType.walkable,TileType.walkable,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.chest },
+        {TileType.chest,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.walkable,TileType.walkable,TileType.walkable,TileType.walkable,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.walkable,TileType.walkable,TileType.walkable,TileType.walkable,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.chest },
         //row11     
         {TileType.walkable,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.walkable,TileType.walkable,TileType.walkable,TileType.walkable,TileType.walkable,TileType.walkable,TileType.walkable,TileType.walkable,TileType.walkable,TileType.walkable,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.walkable },
         //row12  
@@ -69,23 +75,80 @@ public class BoardScript : MonoBehaviour {
         {TileType.walkable,TileType.walkable,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.walkable,TileType.walkable,TileType.walkable,TileType.walkable,TileType.chest,TileType.chest,TileType.walkable,TileType.walkable,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.unwalkable_walled,TileType.walkable,TileType.walkable },
 
     };
+    */
 
-    static public GameObject[,] Tiles = new GameObject[GlobalGameParameters.maxBoardWidth, GlobalGameParameters.maxBoardHeight];
+
+    public GameObject tile;
+    public GameObject nwWall;
+    public GameObject neWall;
+    static public GameObject[,] Tiles;
 
     // Use this for initialization
     void Start () {
-        GameObject go;        
+        GameObject go;
+        GameObject nwWall_go;
+        GameObject neWall_go;
         float r;
-        for (int x = 0; x < 20; x++)
+
+        string[] mapRows = File.ReadAllLines("E:\\GitHub\\WizardGame\\MapEdit\\MapEdit\\map2.txt");
+        GlobalGameParameters.maxBoardWidth = mapRows[0].Split(',').Length;
+        GlobalGameParameters.maxBoardHeight = mapRows.Length;
+
+
+
+
+
+        Tiles = new GameObject[GlobalGameParameters.maxBoardWidth, GlobalGameParameters.maxBoardHeight];
+
+
+
+        for (int x = 0; x < GlobalGameParameters.maxBoardWidth; x++)
         {
-            for (int y = 0; y < 20; y++)
+            for (int y = 0; y < GlobalGameParameters.maxBoardHeight; y++)
             {                
                 float[] tileCoords = gridPositionToScreenPosition(x, y);
+
+                int tileLayer = 4 * (x + y);
+                int NWWallLayer = tileLayer + 1;
+                int NEWallLayer = tileLayer + 2;
+
+
+
+
                 go = Instantiate(tile, new Vector3(tileCoords[0], tileCoords[1], 0), Quaternion.identity) as GameObject;
-                
+                go.GetComponent<SpriteRenderer>().sortingOrder = tileLayer;
+
+                string tileString = mapRows[y].Split(',')[x];
+                TileType type = (TileType)Convert.ToInt32(tileString.Split(';')[0]);
+                bool NWWall;
+                bool NEWall;
+
+                if (Convert.ToInt32(tileString.Split(';')[1]) == 0)
+                {
+                    NWWall = false;
+                }
+                else
+                {
+                    NWWall = true;
+                    nwWall_go = Instantiate(nwWall, new Vector3(tileCoords[0] + GlobalGameParameters.NWWallOffsetX, tileCoords[1] + GlobalGameParameters.NWWallOffsetY, 0), Quaternion.identity) as GameObject;
+                    nwWall_go.GetComponent<SpriteRenderer>().sortingOrder = NWWallLayer;
+                }
+
+                if (Convert.ToInt32(tileString.Split(';')[2]) == 0)
+                {
+                    NEWall = false;
+                }
+                else
+                {
+                    NEWall = true;
+                    neWall_go = Instantiate(neWall, new Vector3(tileCoords[0] + GlobalGameParameters.NEWallOffsetX, tileCoords[1] + GlobalGameParameters.NEWallOffsetY, 0), Quaternion.identity) as GameObject;
+                    neWall_go.GetComponent<SpriteRenderer>().sortingOrder = NEWallLayer;
+                }
+
+
                 //Set the Tiles gameobject as the tile's parent
                 go.transform.parent = transform.GetChild(0);
-                TileProperties tileProp = new TileProperties(x, y, boardMap[y, x]);
+                TileProperties tileProp = new TileProperties(x, y, type,NEWall, NWWall);
                 go.SendMessage("setTileProperties", tileProp);
 
                 Tiles[x, y] = go;                
@@ -104,7 +167,7 @@ public class BoardScript : MonoBehaviour {
         float[] returnFloat = new float[2] { 0f, 0f };
 
         returnFloat[0] = ((float)y * -0.64f) + ((float)x * 0.64f);
-        returnFloat[1] = ((float)(x + y) * 0.32f) - 6.08f;
+        returnFloat[1] = ((float)(x + y) * -0.32f);
 
         return returnFloat;
     }

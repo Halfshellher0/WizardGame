@@ -39,14 +39,13 @@ static public class Pathfinding  {
     {
         List<Node> pathToDest = new List<Node>();
         List<Node> openList = new List<Node>();
-        List<Node> tempList = new List<Node>();
-        List<Node> tempList2 = new List<Node>();
-        List<Node> closedList = new List<Node>();
+        List<Node> tempList = new List<Node>();       
+        List<Node> closedList = new List<Node>();        
         bool finishLoop = false;
         bool foundDestination = false;
 
-        Node sourceNode = new Node(sourceX, sourceY, null, calculateH(sourceX, sourceY, destinationX, destinationY));
-        tempList = retieveAdjacentWalkableNodes(sourceNode, closedList, destinationX, destinationY);
+        Node currentNode = new Node(sourceX, sourceY, null, calculateH(sourceX, sourceY, destinationX, destinationY));
+        tempList = retieveAdjacentWalkableNodes(currentNode, closedList, destinationX, destinationY);
 
         foreach (Node node in tempList)
         {
@@ -54,11 +53,11 @@ static public class Pathfinding  {
         }
         tempList.Clear();
 
-        closedList.Add(sourceNode);
+        closedList.Add(currentNode);
 
         while (!finishLoop)
         {
-            if (openList.Count > 1)
+            if (openList.Count > 0)
             {
                 //find the node with the worst score, move it to closed list.
                 int removeIndex = findLowestScore(openList);
@@ -68,45 +67,33 @@ static public class Pathfinding  {
                     foundDestination = true;
                 }
 
-                closedList.Add(openList[removeIndex]);
+                currentNode = openList[removeIndex];
+                closedList.Add(currentNode);                
                 openList.RemoveAt(removeIndex);
-            }
-            else if (openList.Count == 1)
-            {
-                if (openList[0].X != destinationX && openList[0].Y != destinationY)
-                {
-                    finishLoop = true;
-                }
             }
             else
             {
                 finishLoop = true;
             }
+            
 
             if (!finishLoop)
             {
-                //Search for all valid nodes branching off of those in the openList.
-                foreach (Node node in openList)
-                {
-                    tempList = retieveAdjacentWalkableNodes(node, closedList, destinationX, destinationY);
-                    foreach (Node node2 in tempList)
-                    {
-                        tempList2.Add(node2);
-                    }
-                    tempList.Clear();
-                }
+                
+                tempList = retieveAdjacentWalkableNodes(currentNode, closedList, destinationX, destinationY);               
+                
 
                 //If the Node already exists in openList, check to see if its a shorter path, otherwise remove it.
                 int lineCounter = 0;
-                foreach (Node node in tempList2)
+                foreach (Node node in tempList)
                 {
-                    if (isNodeInList(tempList2[lineCounter].X, tempList2[lineCounter].Y, openList))
+                    if (isNodeInList(tempList[lineCounter].X, tempList[lineCounter].Y, openList))
                     {
-                        int openListIndex = findNodeInList(tempList2[lineCounter].X, tempList2[lineCounter].Y, openList);
-                        if (tempList2[lineCounter].G < openList[openListIndex].G)
+                        int openListIndex = findNodeInList(tempList[lineCounter].X, tempList[lineCounter].Y, openList);
+                        if (tempList[lineCounter].G < openList[openListIndex].G)
                         {
                             openList.RemoveAt(openListIndex);
-                            openList.Add(tempList2[lineCounter]);
+                            openList.Add(tempList[lineCounter]);
                         }
                     }
                     else
@@ -115,7 +102,7 @@ static public class Pathfinding  {
                     }
                     lineCounter++;
                 }
-                tempList2.Clear();
+                tempList.Clear();
             }
         }
 
@@ -144,11 +131,11 @@ static public class Pathfinding  {
         //Check if tiles are walkable, if so create a node for them and add it to the list.
         
         //NorthEast Node
-        targetX = searchNode.X + 1;
-        targetY = searchNode.Y;
-        if (targetX < GlobalGameParameters.maxBoardWidth)
+        targetX = searchNode.X;
+        targetY = searchNode.Y - 1;
+        if (targetY > -1)
         {
-            if(BoardScript.Tiles[targetX, targetY].GetComponent<TileScript>().isWalkable)
+            if(BoardScript.Tiles[targetX, targetY].GetComponent<TileScript>().isWalkable && !BoardScript.Tiles[searchNode.X, searchNode.Y].GetComponent<TileScript>().NEWall)
             {
                 if (!isNodeInList(targetX, targetY, closedList))
                 {                    
@@ -159,11 +146,11 @@ static public class Pathfinding  {
         }
 
         //NorthWest Node
-        targetX = searchNode.X;
-        targetY = searchNode.Y + 1;
-        if (targetY < GlobalGameParameters.maxBoardHeight)
+        targetX = searchNode.X - 1;
+        targetY = searchNode.Y;
+        if (targetX > -1)
         {
-            if (BoardScript.Tiles[targetX, targetY].GetComponent<TileScript>().isWalkable)
+            if (BoardScript.Tiles[targetX, targetY].GetComponent<TileScript>().isWalkable && !BoardScript.Tiles[searchNode.X, searchNode.Y].GetComponent<TileScript>().NWWall)
             {
                 if (!isNodeInList(targetX, targetY, closedList))
                 {                    
@@ -174,11 +161,11 @@ static public class Pathfinding  {
         }
 
         //SouthWest Node
-        targetX = searchNode.X - 1;
-        targetY = searchNode.Y;
-        if (targetX > -1)
+        targetX = searchNode.X;
+        targetY = searchNode.Y + 1;
+        if (targetY < GlobalGameParameters.maxBoardHeight)
         {
-            if (BoardScript.Tiles[targetX, targetY].GetComponent<TileScript>().isWalkable)
+            if (BoardScript.Tiles[targetX, targetY].GetComponent<TileScript>().isWalkable && !BoardScript.Tiles[targetX, targetY].GetComponent<TileScript>().NEWall)
             {
                 if (!isNodeInList(targetX, targetY, closedList))
                 {                    
@@ -189,11 +176,11 @@ static public class Pathfinding  {
         }
 
         //SouthEast Node
-        targetX = searchNode.X;
-        targetY = searchNode.Y - 1;
-        if (targetY > -1)
+        targetX = searchNode.X + 1;
+        targetY = searchNode.Y;
+        if (targetX < GlobalGameParameters.maxBoardWidth)
         {
-            if (BoardScript.Tiles[targetX, targetY].GetComponent<TileScript>().isWalkable)
+            if (BoardScript.Tiles[targetX, targetY].GetComponent<TileScript>().isWalkable && !BoardScript.Tiles[targetX, targetY].GetComponent<TileScript>().NWWall)
             {
                 if (!isNodeInList(targetX, targetY, closedList))
                 {                   
@@ -222,6 +209,7 @@ static public class Pathfinding  {
         {
             if (node.Score < lowestScore)
             {
+                lowestScore = node.Score;
                 returnInt = lineCounter;
             }
             lineCounter++;
